@@ -3,10 +3,11 @@ import userDao from "../dao/mongoDB/user.dao.js";
 import { createHash, isValidPassword } from "../utils/hashPassword.js"
 import passport from "passport";
 import { createToken } from "../utils/jwt.js";
+import { passportCall } from "../middlewares/passport.middleware.js";
 
 const router = Router();
 
-router.post("/register", passport.authenticate("register"), async (req, res) => {
+router.post("/register", passportCall("register"), async (req, res) => {
   try {
     res.status(201).json({ status: "ok", msg: "User created" });
   } catch (error) {
@@ -15,7 +16,7 @@ router.post("/register", passport.authenticate("register"), async (req, res) => 
   }
 });
 
-router.post("/login", passport.authenticate("login"), async (req, res) => {
+router.post("/login", passportCall("login"), async (req, res) => {
   try {
     return res.status(200).json({ status: "ok", payload: req.user });
   } catch (error) {
@@ -40,7 +41,7 @@ router.post("/auth", async (req, res) => {
   }
 });
 
-router.get("/current", passport.authenticate("jwt", {session:false}), async (req, res) => {
+router.get("/current", passportCall("jwt"), async (req, res) => {
   res.status(200).json({ status: "ok", user:req.user });
 });
 
