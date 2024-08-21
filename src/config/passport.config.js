@@ -2,6 +2,7 @@ import passport from "passport";
 import local from "passport-local";
 import jwt from "passport-jwt"; 
 import userDao from "../dao/mongoDB/user.dao.js";
+import cartDao from "../dao/mongoDB/cart.dao.js";
 import { createHash, isValidPassword } from "../utils/hashPassword.js";
 import envs from "./envs.config.js"
 import { cookieExtractor } from "../utils/cookieExtractor.js";
@@ -27,6 +28,8 @@ export const initializePassport = () => {
         const { first_name, last_name, age } = req.body;
         const user = await userDao.getByEmail(username);
         if (user) return done(null, false, { message: "User already exists" });
+        
+        const cart = await cartDao.create();
 
         const newUser = {
           first_name,
@@ -34,6 +37,7 @@ export const initializePassport = () => {
           password: createHash(password),
           email: username,
           age,
+          cart : cart._id 
         };
 
         const userCreate = await userDao.create(newUser);
@@ -51,8 +55,8 @@ export const initializePassport = () => {
 
       try {
         const user = await userDao.getByEmail(username);
-        if (!user || !isValidPassword(user.password, password)) return done(null, false);
-
+        if (!user || !isValidPassword(user.password, password)) return done(null, false, {msg: "User o Email invalid"});
+        
         return done(null, user);
 
       } catch (error) {
@@ -78,10 +82,6 @@ export const initializePassport = () => {
       }
     )
   )
-
-
-
-
 
 
   // Serialización y deserialización de usuarios

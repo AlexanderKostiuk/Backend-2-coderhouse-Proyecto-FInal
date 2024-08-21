@@ -18,6 +18,7 @@ router.post("/register", passportCall("register"), async (req, res) => {
 
 router.post("/login", passportCall("login"), async (req, res) => {
   try {
+    const token = createToken(req.user);
     return res.status(200).json({ status: "ok", payload: req.user });
   } catch (error) {
     console.log(error);
@@ -30,7 +31,7 @@ router.post("/auth", async (req, res) => {
     const { email, password } = req.body;
     const user = await userDao.getByEmail(email);
     if (!user || !isValidPassword(user.password, password)) return res.status(401).json({ status: "error", msg: "User or email invalid" });
-/*     console.log(user); */
+
     const token = createToken(user);
 
     res.cookie("token", token, { httpOnly: true });
