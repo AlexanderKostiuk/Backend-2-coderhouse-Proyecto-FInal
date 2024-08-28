@@ -1,8 +1,8 @@
 import passport from "passport";
 import local from "passport-local";
 import jwt from "passport-jwt"; 
-import userDao from "../dao/mongoDB/user.dao.js";
-import cartDao from "../dao/mongoDB/cart.dao.js";
+import userRepository from "../persistence/mongoDB/user.repository.js";
+import cartRepository from "../persistence/mongoDB/cart.repository.js";
 import { createHash, isValidPassword } from "../utils/hashPassword.js";
 import envs from "./envs.config.js"
 import { cookieExtractor } from "../utils/cookieExtractor.js";
@@ -29,7 +29,7 @@ export const initializePassport = () => {
         const user = await userDao.getByEmail(username);
         if (user) return done(null, false, { message: "User already exists" });
         
-        const cart = await cartDao.create();
+        const cart = await cartRepository.create();
 
         const newUser = {
           first_name,
@@ -40,7 +40,7 @@ export const initializePassport = () => {
           cart : cart._id 
         };
 
-        const userCreate = await userDao.create(newUser);
+        const userCreate = await userRepository.create(newUser);
 
         return done(null, userCreate);
       } catch (error) {
@@ -54,7 +54,7 @@ export const initializePassport = () => {
     new LocalStrategy({ usernameField: "email" }, async (username, password, done) => {
 
       try {
-        const user = await userDao.getByEmail(username);
+        const user = await userRepository.getByEmail(username);
         if (!user || !isValidPassword(user.password, password)) return done(null, false, {msg: "User o Email invalid"});
         
         return done(null, user);
@@ -98,7 +98,7 @@ export const initializePassport = () => {
 
   passport.deserializeUser(async (id, done) => {
     try {
-      const user = await userDao.getById(id);
+      const user = await userRepository.getById(id);
       done(null, user);
     } catch (error) {
       done(error);

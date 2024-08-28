@@ -1,6 +1,7 @@
 import { Router } from "express";
-import cartDao from "../dao/mongoDB/cart.dao.js";
-import productDao from "../dao/mongoDB/product.dao.js";
+import cartRepository from "../persistence/mongoDB/cart.repository.js";
+import productRepository from "../persistence/mongoDB/product.repository.js";
+
 import cartsControllers from "../controllers/carts.controllers.js";
 import { checkProductAndCart } from "../middlewares/checkProductAndCart.middleware.js";
 
