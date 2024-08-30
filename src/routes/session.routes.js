@@ -19,6 +19,8 @@ router.post("/register", passportCall("register"), async (req, res) => {
 router.post("/login", passportCall("login"), async (req, res) => {
   try {
     const token = createToken(req.user);
+    res.cookie("token", token, {httpOnly: true});
+
     return res.status(200).json({ status: "ok", payload: req.user });
   } catch (error) {
     console.log(error);
@@ -26,7 +28,7 @@ router.post("/login", passportCall("login"), async (req, res) => {
   }
 });
 
-router.post("/auth", async (req, res) => {
+/* router.post("/auth", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await userRepository.getByEmail(email);
@@ -41,7 +43,7 @@ router.post("/auth", async (req, res) => {
     res.status(500).json({ status: "error", msg: "Internal server error" });
   }
 });
-
+ */
 router.get("/current", passportCall("jwt"), async (req, res) => {
   res.status(200).json({ status: "ok", user:req.user });
 });

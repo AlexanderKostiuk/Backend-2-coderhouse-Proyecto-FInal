@@ -3,11 +3,12 @@ import productRepository from "../persistence/mongoDB/product.repository.js";
 
 export const checkProductData = async (req = request, res = response, next) => {
   try {
-    const { title, description, price, code, stock, category } = req.body;
+    const { title, description, price, thumbnail, code, stock, category } = req.body;
     const newProduct = {
       title,
       description,
       price,
+      thumbnail,
       code,
       stock,
       category,
@@ -25,6 +26,6 @@ export const checkProductData = async (req = request, res = response, next) => {
     next();
   } catch (error) {
     console.log(error);
-    res.status(500).json({ status: "Erro", msg: "Error interno del servidor" });
+    res.status(500).json({ status: "Error", msg: "Error interno del servidor" });
   }
 };

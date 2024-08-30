@@ -26,7 +26,7 @@ export const initializePassport = () => {
       */
       try {
         const { first_name, last_name, age } = req.body;
-        const user = await userDao.getByEmail(username);
+        const user = await userRepository.getByEmail(username);
         if (user) return done(null, false, { message: "User already exists" });
         
         const cart = await cartRepository.create();

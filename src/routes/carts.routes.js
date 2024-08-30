@@ -4,6 +4,9 @@ import productRepository from "../persistence/mongoDB/product.repository.js";
 
 import cartsControllers from "../controllers/carts.controllers.js";
 import { checkProductAndCart } from "../middlewares/checkProductAndCart.middleware.js";
+import { authorization } from "../middlewares/authorization.middleware.js";
+import { isUserCart } from "../middlewares/isUserCart.middleware.js";
+import { passportCall } from "../middlewares/passport.middleware.js";
 
 
 const router = Router();
@@ -12,12 +15,14 @@ router.post("/", cartsControllers.createCart);
 
 router.get("/:cid",cartsControllers.getCartById);
 
-router.post("/:cid/product/:pid", checkProductAndCart, cartsControllers.addProductToCart);
+router.post("/:cid/product/:pid", passportCall("jwt"), authorization("user"), isUserCart, checkProductAndCart, cartsControllers.addProductToCart);
 
-router.delete("/:cid/product/:pid", checkProductAndCart, cartsControllers.deleteProductToCart );
+router.delete("/:cid/product/:pid", passportCall("jwt"),authorization("user"), checkProductAndCart, cartsControllers.deleteProductToCart );
 
-router.put("/:cid/product/:pid", checkProductAndCart, cartsControllers.updateQuantityProductInCart );
+router.put("/:cid/product/:pid", passportCall("jwt"), authorization("user"), checkProductAndCart, cartsControllers.updateQuantityProductInCart );
 
-router.delete("/:cid",cartsControllers.clearProductsToCart );
+router.delete("/:cid", passportCall("jwt"), authorization("user"), cartsControllers.clearProductsToCart);
+
+router.get("/:cid/purchase", passportCall("jwt"), authorization("user"), cartsControllers.purchaseCart)
 
 export default router;
